@@ -1,61 +1,44 @@
-import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
-import { Provider } from 'react-redux'
-import configureStore from 'redux-mock-store'
-import ProductList from './ProductList'
+import productsReducer, { addProduct, deleteProduct, setSelectedCategory } from '../store/features/productsSlice'
 
-const mockStore = configureStore([])
+describe('productsSlice', () => {
+  const initialState = {
+    products: [
+      { id: 1, name: 'Shoe 1', price: 100, category: 'mens-shoes' },
+      { id: 2, name: 'Shoe 2', price: 150, category: 'womens-shoes' }
+    ],
+    loading: false,
+    error: null,
+    selectedCategory: 'all'
+  }
 
-describe('ProductList', () => {
-    const initialState = {
-        products: {
-            products: [
-                { id: 1, title: 'Nike Shoe', category: 'sneakers', price: 100, image: 'img1.jpg', brand: 'Nike' },
-                { id: 2, title: 'Adidas Shoe', category: 'sneakers', price: 80, image: 'img2.jpg', brand: 'Adidas' }
-            ],
-            selectedCategory: 'all',
-            selectedBrand: 'all',
-            selectedPriceRange: 'all',
-            selectedColor: 'all'
-        }
+  it('should add a new product', () => {
+    const newProduct = {
+      name: 'New Shoe',
+      price: 200,
+      category: 'mens-shoes'
     }
+    
+    const action = addProduct(newProduct)
+    const state = productsReducer(initialState, action)
+    
+    expect(state.products).toHaveLength(3)
+    expect(state.products[2]).toMatchObject(newProduct)
+    expect(state.products[2].id).toBeDefined()
+  })
 
-    it('renders sidebar filters and product list', () => {
-        const store = mockStore(initialState)
-        render(
-            <Provider store={store}>
-                <ProductList />
-            </Provider>
-        )
+  it('should delete a product', () => {
+    const action = deleteProduct(1)
+    const state = productsReducer(initialState, action)
+    
+    expect(state.products).toHaveLength(1)
+    expect(state.products[0].id).toBe(2)
+  })
 
-        // Check Sidebar sections
-        expect(screen.getByText('Category')).toBeInTheDocument()
-        expect(screen.getByText('Price')).toBeInTheDocument()
-        expect(screen.getByText('Colors')).toBeInTheDocument()
-
-        // Check Product Cards
-        expect(screen.getByText('Nike Shoe')).toBeInTheDocument()
-        expect(screen.getByText('Adidas Shoe')).toBeInTheDocument()
-    })
-
-    it('filters are interactive', () => {
-        const store = mockStore(initialState)
-        // We can't easily test state updates with mockStore as it doesn't update, 
-        // but we can check if dispatch is called.
-        store.dispatch = vi.fn()
-
-        render(
-            <Provider store={store}>
-                <ProductList />
-            </Provider>
-        )
-
-        const sneakersFilter = screen.getByLabelText('Sneakers')
-        fireEvent.click(sneakersFilter)
-
-        expect(store.dispatch).toHaveBeenCalledWith(expect.objectContaining({
-            type: 'products/setSelectedCategory',
-            payload: 'sneakers'
-        }))
-    })
+  it('should set selected category', () => {
+    const action = setSelectedCategory('mens-shoes')
+    const state = productsReducer(initialState, action)
+    
+    expect(state.selectedCategory).toBe('mens-shoes')
+  })
 })

@@ -1,8 +1,6 @@
 import React from 'react'
 import { useDispatch } from 'react-redux'
 import { addToCart } from '../store/features/cartSlice'
-import { BsFillBagFill } from 'react-icons/bs'
-import { AiFillStar } from 'react-icons/ai'
 
 const ProductCard = ({ product }) => {
     const dispatch = useDispatch()
@@ -11,34 +9,45 @@ const ProductCard = ({ product }) => {
         dispatch(addToCart(product))
     }
 
-    const { image, title, name, rating, reviews, price, discountPercentage } = product
-
-    // Use name or title depending on what the API returns (dummyjson uses title)
-    const productName = title || name
-
-    const discountedPrice = discountPercentage > 0
-        ? (price - (price * discountPercentage / 100)).toFixed(2)
-        : price
+    const getDiscountedPrice = (price, discount) => {
+        return (price - (price * discount / 100)).toFixed(2)
+    }
 
     return (
-        <div className="card">
-            <img src={image} alt={productName} className="card-img" />
-            <div className="card-details">
-                <h3 className="card-title">{productName}</h3>
-                <div className="card-reviews">
-                    <AiFillStar className="rating-star" />
-                    <span className="total-reviews">{rating}</span>
-                    <span className="total-reviews-count">(123 reviews)</span>
+        <div className="product-card">
+            <img src={product.image} alt={product.name} className="product-image" />
+            <div className="product-info">
+                <h3>{product.name}</h3>
+                {product.brand && <p className="brand">{product.brand}</p>}
+                
+                <div className="price-section">
+                    {product.discountPercentage > 0 ? (
+                        <>
+                            <span className="original-price">${product.price}</span>
+                            <span className="discounted-price">
+                                ${getDiscountedPrice(product.price, product.discountPercentage)}
+                            </span>
+                            <span className="discount-badge">-{product.discountPercentage.toFixed(0)}%</span>
+                        </>
+                    ) : (
+                        <span className="price">${product.price}</span>
+                    )}
                 </div>
-                <div className="card-price">
-                    <div className="price">
-                        <del>${price}</del> ${discountedPrice}
-                    </div>
-                    <div className="bag" onClick={handleAddToCart}>
-                        <BsFillBagFill className="bag-icon" />
-                    </div>
-                </div>
+                
+                {product.rating && (
+                    <div className="rating">⭐ {product.rating.toFixed(1)}</div>
+                )}
+                
+                <p className="stock">Stock: {product.stock}</p>
             </div>
+            
+            <button 
+                onClick={handleAddToCart}
+                disabled={product.stock === 0}
+                className="add-to-cart"
+            >
+                {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+            </button>
         </div>
     )
 }

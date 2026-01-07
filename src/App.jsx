@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import { fetchShoes } from './store/features/productsSlice'
 import ProductList from './components/ProductList'
 import Cart from './components/Cart'
@@ -7,30 +7,29 @@ import './App.css'
 
 function App() {
   const dispatch = useDispatch()
-  const [isCartOpen, setIsCartOpen] = useState(false)
+  const { loading, error } = useSelector(state => state.products)
 
-  // Fetch shoes on component mount
   useEffect(() => {
     dispatch(fetchShoes())
   }, [dispatch])
 
+  if (loading) {
+    return <div className="loading">Loading shoes...</div>
+  }
+
+  if (error) {
+    return (
+      <div className="error">
+        <h2>Error loading shoes: {error}</h2>
+        <button onClick={() => dispatch(fetchShoes())}>Retry</button>
+      </div>
+    )
+  }
+
   return (
     <div className="app">
-      <nav className="navbar">
-        <div className="nav-container">
-          {/* Logo or search could go here */}
-          <div className="search-bar">
-            <input type="text" placeholder="Enter your search shoes" />
-          </div>
-
-          <div className="nav-actions">
-            <button onClick={() => setIsCartOpen(true)}>Cart 🛒</button>
-          </div>
-        </div>
-      </nav>
-
-      <Cart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
-
+      <h1>👟 Shoe Store</h1>
+      <Cart />
       <ProductList />
     </div>
   )

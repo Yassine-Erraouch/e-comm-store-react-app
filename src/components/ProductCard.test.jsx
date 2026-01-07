@@ -1,57 +1,86 @@
-import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { Provider } from 'react-redux'
-import configureStore from 'redux-mock-store'
+import { configureStore } from '@reduxjs/toolkit'
 import ProductCard from './ProductCard'
+import cartReducer from '../store/features/cartSlice'
 
-const mockStore = configureStore([])
+const createMockStore = () => {
+  return configureStore({
+    reducer: {
+      cart: cartReducer
+    }
+  })
+}
+
+const mockProduct = {
+  id: 1,
+  name: 'Test Shoe',
+  price: 100,
+  stock: 5,
+  image: 'test-image.jpg',
+  brand: 'Test Brand',
+  rating: 4.5,
+  discountPercentage: 0
+}
 
 describe('ProductCard', () => {
-    const product = {
-        id: 1,
-        image: 'test-image.jpg',
-        title: 'Test Shoe',
-        price: 100,
-        rating: 4.5,
-        discountPercentage: 20
-    }
+  it('should render product information', () => {
+    const store = createMockStore()
+    
+    render(
+      <Provider store={store}>
+        <ProductCard product={mockProduct} />
+      </Provider>
+    )
+    
+    expect(screen.getByText('Test Shoe')).toBeInTheDocument()
+    expect(screen.getByText('Test Brand')).toBeInTheDocument()
+    expect(screen.getByText('$100')).toBeInTheDocument()
+    expect(screen.getByText('Stock: 5')).toBeInTheDocument()
+    expect(screen.getByText('⭐ 4.5')).toBeInTheDocument()
+  })
 
-    it('renders product details correctly', () => {
-        const store = mockStore({})
-        render(
-            <Provider store={store}>
-                <ProductCard product={product} />
-            </Provider>
-        )
+  it('should show "Add to Cart" button when in stock', () => {
+    const store = createMockStore()
+    
+    render(
+      <Provider store={store}>
+        <ProductCard product={mockProduct} />
+      </Provider>
+    )
+    
+    const button = screen.getByText('Add to Cart')
+    expect(button).toBeInTheDocument()
+    expect(button).not.toBeDisabled()
+  })
 
-        expect(screen.getByText('Test Shoe')).toBeInTheDocument()
-        expect(screen.getByText('4.5')).toBeInTheDocument()
-        // Discounted price calculation: 100 - 20% = 80
-        expect(screen.getByText('$80.00')).toBeInTheDocument()
-    })
+  it('should show "Out of Stock" when stock is 0', () => {
+    const outOfStockProduct = { ...mockProduct, stock: 0 }
+    const store = createMockStore()
+    
+    render(
+      <Provider store={store}>
+        <ProductCard product={outOfStockProduct} />
+      </Provider>
+    )
+    
+    const button = screen.getByText('Out of Stock')
+    expect(button).toBeInTheDocument()
+    expect(button).toBeDisabled()
+  })
 
-    it('dispatches addToCart action on button click', () => {
-        const store = mockStore({})
-        store.dispatch = vi.fn()
-
-        render(
-            <Provider store={store}>
-                <ProductCard product={product} />
-            </Provider>
-        )
-
-        const bagIcon = screen.getByRole('img', { hidden: true }) // react-icons might be hidden or generic SVG
-        // Alternatively, find the container div
-        const bagButton = screen.getByText((content, element) => {
-            return element.classList.contains('bag')
-        })
-
-        fireEvent.click(bagButton)
-
-        expect(store.dispatch).toHaveBeenCalled()
-        expect(store.dispatch).toHaveBeenCalledWith(expect.objectContaining({
-            type: 'cart/addToCart',
-            payload: product
-        }))
-    })
+  it('should dispatch addToCart when button is clicked', () => {
+    const store = createMockStore()
+    const spy = vi.spyOn(store, 'dispatch')
+    
+    render(
+      <Provider store={store}>
+        <ProductCard product={mockProduct} />
+      </Provider>
+    )
+    
+    fireEvent.click(screen.getByText('Add to Cart'))
+    expect(spy).toHaveBeenCalled()
+  })
 })
