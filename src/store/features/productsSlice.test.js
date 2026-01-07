@@ -7,6 +7,7 @@ import productsReducer, {
   setSelectedCategory,
   setSelectedBrand,
   setSelectedPriceRange,
+  setSelectedRating,
   fetchShoes
 } from './productsSlice'
 
@@ -18,7 +19,8 @@ describe('productsSlice', () => {
     error: null,
     selectedCategory: 'all',
     selectedBrand: 'all',
-    selectedPriceRange: 'all'
+    selectedPriceRange: 'all',
+    selectedRating: 'all'
   }
 
   // Sample product for testing
@@ -114,6 +116,11 @@ describe('productsSlice', () => {
     it('should set selected price range', () => {
       const state = productsReducer(initialState, setSelectedPriceRange('50to100'))
       expect(state.selectedPriceRange).toBe('50to100')
+    })
+
+    it('should set selected rating', () => {
+      const state = productsReducer(initialState, setSelectedRating('4'))
+      expect(state.selectedRating).toBe('4')
     })
   })
 

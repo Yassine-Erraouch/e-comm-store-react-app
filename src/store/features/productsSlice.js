@@ -49,7 +49,8 @@ const initialState = {
   error: null,
   selectedCategory: 'all', // 'all', 'mens-shoes', 'womens-shoes'
   selectedBrand: 'all',
-  selectedPriceRange: 'all'
+  selectedPriceRange: 'all',
+  selectedRating: 'all' // 'all', '4', '3', '2'
 }
 
 const productsSlice = createSlice({
@@ -101,6 +102,11 @@ const productsSlice = createSlice({
     // Set price range filter
     setSelectedPriceRange: (state, action) => {
       state.selectedPriceRange = action.payload
+    },
+
+    // Set rating filter
+    setSelectedRating: (state, action) => {
+      state.selectedRating = action.payload
     }
   },
   extraReducers: (builder) => {
@@ -128,7 +134,8 @@ export const {
   updateStock,
   setSelectedCategory,
   setSelectedBrand,
-  setSelectedPriceRange
+  setSelectedPriceRange,
+  setSelectedRating
 } = productsSlice.actions
 
 export default productsSlice.reducer

@@ -1,11 +1,11 @@
 import { useMemo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { setSelectedCategory, setSelectedBrand, setSelectedPriceRange } from '../store/features/productsSlice'
+import { setSelectedCategory, setSelectedBrand, setSelectedPriceRange, setSelectedRating } from '../store/features/productsSlice'
 import ProductCard from './ProductCard'
 
 const ProductList = () => {
     const dispatch = useDispatch()
-    const { products, selectedCategory, selectedBrand, selectedPriceRange } = useSelector(state => state.products)
+    const { products, selectedCategory, selectedBrand, selectedPriceRange, selectedRating } = useSelector(state => state.products)
 
     // Get unique brands from products
     const brands = useMemo(() => {
@@ -22,9 +22,11 @@ const ProductList = () => {
             if (selectedPriceRange === 'under50') priceMatch = product.price < 50
             else if (selectedPriceRange === '50to100') priceMatch = product.price >= 50 && product.price <= 100
             else if (selectedPriceRange === 'over100') priceMatch = product.price > 100
-            return categoryMatch && brandMatch && priceMatch
+            let ratingMatch = true
+            if (selectedRating !== 'all') ratingMatch = product.rating >= Number(selectedRating)
+            return categoryMatch && brandMatch && priceMatch && ratingMatch
         })
-    }, [products, selectedCategory, selectedBrand, selectedPriceRange])
+    }, [products, selectedCategory, selectedBrand, selectedPriceRange, selectedRating])
 
     return (
         <div className="product-list-container" style={{ display: 'flex', gap: '20px' }}>
@@ -73,6 +75,21 @@ const ProductList = () => {
                         <option value="under50">Under $50</option>
                         <option value="50to100">$50 - $100</option>
                         <option value="over100">Over $100</option>
+                    </select>
+                </div>
+
+                {/* Rating Filter */}
+                <div style={{ marginBottom: '20px' }}>
+                    <h4 style={{ marginBottom: '8px' }}>Rating</h4>
+                    <select 
+                        value={selectedRating} 
+                        onChange={(e) => dispatch(setSelectedRating(e.target.value))}
+                        style={{ width: '100%', padding: '8px' }}
+                    >
+                        <option value="all">All Ratings</option>
+                        <option value="4">⭐ 4 & Up</option>
+                        <option value="3">⭐ 3 & Up</option>
+                        <option value="2">⭐ 2 & Up</option>
                     </select>
                 </div>
 

@@ -102,7 +102,7 @@ describe('cartSlice', () => {
       }
       const state = cartReducer(stateWithItems, clearCart())
       
-      expect(state.items).toHaveLength(0)
+      expect(state.items).toEqual(initialState)
       expect(state.total).toBe(0)
       expect(state.itemCount).toBe(0)
     })
