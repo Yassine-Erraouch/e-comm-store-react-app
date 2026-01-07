@@ -82,7 +82,7 @@ const cartSlice = createSlice({
     
     // Helper to calculate totals
     calculateTotals: (state) => {
-      state.itemCount = state.items.reduce((total, item) => total + item.quantity, 0)
+      state.itemCount = state.items.length
       state.total = state.items.reduce((total, item) => total + (item.price * item.quantity), 0)
     }
   }

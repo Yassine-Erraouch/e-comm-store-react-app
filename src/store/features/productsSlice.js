@@ -1,42 +1,45 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
-// Async thunk for fetching shoes
+// API URLs for fetching shoes
+const MENS_SHOES_URL = 'https://dummyjson.com/products/category/mens-shoes'
+const WOMENS_SHOES_URL = 'https://dummyjson.com/products/category/womens-shoes'
+
+// Helper function to transform API data into our app's format
+const transformShoeData = (shoe) => ({
+  id: shoe.id,
+  name: shoe.title,
+  price: shoe.price,
+  category: shoe.category,
+  stock: shoe.stock,
+  image: shoe.thumbnail,
+  images: shoe.images,
+  description: shoe.description,
+  brand: shoe.brand,
+  rating: shoe.rating,
+  discountPercentage: shoe.discountPercentage
+})
+
+// Async thunk for fetching shoes from the API
 export const fetchShoes = createAsyncThunk(
   'products/fetchShoes',
-  async (_, { rejectWithValue }) => {
-    try {
-      // Fetch both men's and women's shoes
-      const [mensResponse, womensResponse] = await Promise.all([
-        fetch('https://dummyjson.com/products/category/mens-shoes'),
-        fetch('https://dummyjson.com/products/category/womens-shoes')
-      ])
-
-      if (!mensResponse.ok || !womensResponse.ok) {
-        throw new Error('Failed to fetch shoes')
-      }
-
-      const mensData = await mensResponse.json()
-      const womensData = await womensResponse.json()
-
-      // Combine and transform the data
-      const allShoes = [...mensData.products, ...womensData.products]
-
-      return allShoes.map(shoe => ({
-        id: shoe.id,
-        name: shoe.title,
-        price: shoe.price,
-        category: shoe.category,
-        stock: shoe.stock,
-        image: shoe.thumbnail,
-        images: shoe.images,
-        description: shoe.description,
-        brand: shoe.brand,
-        rating: shoe.rating,
-        discountPercentage: shoe.discountPercentage
-      }))
-    } catch (error) {
-      return rejectWithValue(error.message)
+  async () => {
+    // Step 1: Fetch men's shoes
+    const mensResponse = await fetch(MENS_SHOES_URL)
+    if (!mensResponse.ok) {
+      throw new Error('Failed to fetch mens shoes')
     }
+    const mensData = await mensResponse.json()
+
+    // Step 2: Fetch women's shoes
+    const womensResponse = await fetch(WOMENS_SHOES_URL)
+    if (!womensResponse.ok) {
+      throw new Error('Failed to fetch womens shoes')
+    }
+    const womensData = await womensResponse.json()
+
+    // Step 3: Combine both lists and transform the data
+    const allShoes = [...mensData.products, ...womensData.products]
+    return allShoes.map(transformShoeData)
   }
 )
 
@@ -46,8 +49,7 @@ const initialState = {
   error: null,
   selectedCategory: 'all', // 'all', 'mens-shoes', 'womens-shoes'
   selectedBrand: 'all',
-  selectedPriceRange: 'all',
-  selectedColor: 'all'
+  selectedPriceRange: 'all'
 }
 
 const productsSlice = createSlice({
@@ -99,11 +101,6 @@ const productsSlice = createSlice({
     // Set price range filter
     setSelectedPriceRange: (state, action) => {
       state.selectedPriceRange = action.payload
-    },
-
-    // Set color filter
-    setSelectedColor: (state, action) => {
-      state.selectedColor = action.payload
     }
   },
   extraReducers: (builder) => {
@@ -119,7 +116,7 @@ const productsSlice = createSlice({
       })
       .addCase(fetchShoes.rejected, (state, action) => {
         state.loading = false
-        state.error = action.payload
+        state.error = action.error.message
       })
   }
 })
@@ -131,8 +128,7 @@ export const {
   updateStock,
   setSelectedCategory,
   setSelectedBrand,
-  setSelectedPriceRange,
-  setSelectedColor
+  setSelectedPriceRange
 } = productsSlice.actions
 
 export default productsSlice.reducer

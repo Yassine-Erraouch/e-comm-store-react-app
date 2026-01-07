@@ -41,7 +41,7 @@ describe('cartSlice', () => {
     
     expect(state.items[0].quantity).toBe(2)
     expect(state.total).toBe(200)
-    expect(state.itemCount).toBe(2)
+    expect(state.itemCount).toBe(1)
   })
 
   it('should remove item from cart', () => {
