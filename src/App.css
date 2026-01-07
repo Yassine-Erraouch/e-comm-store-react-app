@@ -1,16 +1,59 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+/* Global Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: white;
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e5e5e5;
+  background-color: white;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  width: 90%;
+  max-width: 1200px;
+}
+
+.search-bar input {
+  padding: 10px 15px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 300px;
+  background-color: #f7f6f6;
+}
+
+.nav-actions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+/* App Container */
 .app {
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
 }
 
+/* Loading & Error */
 .loading {
   text-align: center;
   font-size: 18px;
@@ -33,6 +76,7 @@
   margin-top: 10px;
 }
 
+/* Cart Summary */
 .cart-summary {
   background: #f5f5f5;
   padding: 15px;
@@ -40,7 +84,9 @@
   margin-bottom: 20px;
 }
 
-.products-section, .cart-section {
+/* Products Section */
+.products-section,
+.cart-section {
   margin: 30px 0;
 }
 
@@ -79,6 +125,7 @@
   border-color: #007bff;
 }
 
+/* Actions */
 .actions {
   margin: 20px 0;
   display: flex;
@@ -95,6 +142,7 @@
   cursor: pointer;
 }
 
+/* Products Grid */
 .products-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -102,6 +150,7 @@
   margin-top: 20px;
 }
 
+/* Product Card */
 .product-card {
   border: 1px solid #ddd;
   padding: 15px;
@@ -109,13 +158,13 @@
   background: white;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease;
 }
 
 .product-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .product-image {
@@ -234,6 +283,7 @@
   cursor: pointer;
 }
 
+/* Cart Specifics for App.jsx (if used there) */
 .cart-item {
   display: flex;
   justify-content: space-between;
@@ -250,40 +300,4 @@
   border: none;
   border-radius: 3px;
   cursor: pointer;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
 }

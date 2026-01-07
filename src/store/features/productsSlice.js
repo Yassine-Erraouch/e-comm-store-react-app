@@ -20,7 +20,7 @@ export const fetchShoes = createAsyncThunk(
 
       // Combine and transform the data
       const allShoes = [...mensData.products, ...womensData.products]
-      
+
       return allShoes.map(shoe => ({
         id: shoe.id,
         name: shoe.title,
@@ -44,7 +44,10 @@ const initialState = {
   products: [],
   loading: false,
   error: null,
-  selectedCategory: 'all' // 'all', 'mens-shoes', 'womens-shoes'
+  selectedCategory: 'all', // 'all', 'mens-shoes', 'womens-shoes'
+  selectedBrand: 'all',
+  selectedPriceRange: 'all',
+  selectedColor: 'all'
 }
 
 const productsSlice = createSlice({
@@ -59,7 +62,7 @@ const productsSlice = createSlice({
       }
       state.products.push(newProduct)
     },
-    
+
     // Update
     updateProduct: (state, action) => {
       const { id, updates } = action.payload
@@ -68,12 +71,12 @@ const productsSlice = createSlice({
         state.products[productIndex] = { ...state.products[productIndex], ...updates }
       }
     },
-    
+
     // Delete
     deleteProduct: (state, action) => {
       state.products = state.products.filter(product => product.id !== action.payload)
     },
-    
+
     // Update stock (for cart operations)
     updateStock: (state, action) => {
       const { id, quantity } = action.payload
@@ -86,6 +89,21 @@ const productsSlice = createSlice({
     // Set category filter
     setSelectedCategory: (state, action) => {
       state.selectedCategory = action.payload
+    },
+
+    // Set brand filter
+    setSelectedBrand: (state, action) => {
+      state.selectedBrand = action.payload
+    },
+
+    // Set price range filter
+    setSelectedPriceRange: (state, action) => {
+      state.selectedPriceRange = action.payload
+    },
+
+    // Set color filter
+    setSelectedColor: (state, action) => {
+      state.selectedColor = action.payload
     }
   },
   extraReducers: (builder) => {
@@ -111,7 +129,10 @@ export const {
   updateProduct,
   deleteProduct,
   updateStock,
-  setSelectedCategory
+  setSelectedCategory,
+  setSelectedBrand,
+  setSelectedPriceRange,
+  setSelectedColor
 } = productsSlice.actions
 
 export default productsSlice.reducer
